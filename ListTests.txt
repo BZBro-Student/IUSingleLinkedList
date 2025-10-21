@@ -1,4 +1,0 @@
-Initial Test Plan for an IndexedUnsortedList
-
-Define tests for at least 21 change scenarios, in addition to the 3 given as examples. (Total of 24 or more.)
-
