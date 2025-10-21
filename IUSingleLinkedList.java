@@ -2,23 +2,44 @@ import java.util.Iterator;
 import java.util.ListIterator;
 
 public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
+    private Node<T> head, tail;
+    private int size;
+    private int modCount;
 
-    public IUSingleLinkedList(){
-        private Node<T> head;
-        private Node<T> tail;
-
+    public IUSingleLinkedList() {
+        head = null;
+        tail = null;
+        size = 0;
+        modCount = 0;
     }
 
     @Override
     public void addToFront(T element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addToFront'");
+        Node<T> newNode = new Node<T>(element);
+        if (size == 0) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            newNode.setNextNode(head);
+            head = newNode;
+        }
+        size++;
+        modCount++;
     }
 
     @Override
     public void addToRear(T element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addToRear'");
+        Node<T> newNode = new Node<T>(element);
+        if (size == 0) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            newNode.setNextNode(null);
+            tail.setNextNode(newNode);
+            tail = newNode;
+        }
+        size++;
+        modCount++;
     }
 
     @Override
@@ -128,5 +149,5 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'listIterator'");
     }
-    
+
 }
