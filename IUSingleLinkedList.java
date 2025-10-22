@@ -54,16 +54,21 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
         Node<T> currNode = head;
         Node<T> newNode = new Node<T>(element);
         boolean inserted = false;
+        if (head == null) {
+            throw new NoSuchElementException();
+        }
+
         while (currNode != null) {
             if (currNode.getElement().equals(target)) {
                 Node<T> tempNext = currNode.getNextNode();
                 currNode.setNextNode(newNode);
                 newNode.setNextNode(tempNext);
+                if (currNode == tail) {
+                    tail = newNode;
+                }
                 size++;
                 modCount++;
                 inserted = true;
-            }
-            if (inserted == true) {
                 break;
             }
             currNode = currNode.getNextNode();
@@ -76,20 +81,29 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public void add(int index, T element) {
-        if (index < 0 || index >= size) {
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         }
-        Node<T> newNode = new Node<T>(element);
-        int currIndex = 0;
-        Node<T> currNode = head;
-        while (currNode != null) {
-            if (currIndex == index) {
-                Node<T> tempNext = currNode.getNextNode();
-                currNode.setNextNode(newNode);
-                newNode.setNextNode(tempNext);
+        if (index == 0) {
+            addToFront(element);
+        } else if (index == size) {
+            addToRear(element);
+        } else {
+            Node<T> newNode = new Node<T>(element);
+            int currIndex = 0;
+            Node<T> currNode = head;
+            while (currNode != null) {
+                if (currIndex == index - 1) {
+                    Node<T> tempNext = currNode.getNextNode();
+                    currNode.setNextNode(newNode);
+                    newNode.setNextNode(tempNext);
+                    break;
+                }
+                currNode = currNode.getNextNode();
+                currIndex++;
             }
-            currNode = currNode.getNextNode();
-            index++;
+            size++;
+            modCount++;
         }
     }
 
@@ -118,7 +132,6 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             returnValue = head.getElement();
             head = null;
             tail = null;
-            size--;
         } else {
             returnValue = tail.getElement();
             Node<T> currNode = head;
@@ -127,8 +140,10 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             }
             tail = currNode;
             currNode.setNextNode(null);
-            size--;
+
         }
+        size--;
+        modCount++;
         return returnValue;
     }
 
@@ -164,6 +179,9 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
                     nodeToBeRemoved = currNode;
                     nextNode = nodeToBeRemoved.getNextNode();
                     returnValue = nodeToBeRemoved.getElement();
+                    if (nodeToBeRemoved == tail) {
+                        tail = nodeBeforeIndex;
+                    }
                     nodeBeforeIndex.setNextNode(nextNode);
                     size--;
                     modCount++;
@@ -227,11 +245,17 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T first() {
+        if (isEmpty() || head == null) {
+            throw new NoSuchElementException();
+        }
         return head.getElement();
     }
 
     @Override
     public T last() {
+        if (isEmpty() || tail == null) {
+            throw new NoSuchElementException();
+        }
         return tail.getElement();
     }
 
@@ -251,9 +275,9 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public boolean isEmpty() {
-        boolean isEmpty = true;
+        boolean isEmpty = false;
         if (tail == null && head == null) {
-            isEmpty = false;
+            isEmpty = true;
         }
         return isEmpty;
     }
@@ -261,6 +285,25 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder arrayStringBuilder = new StringBuilder();
+        arrayStringBuilder.append("[");
+        // for (int i = 0; i < rear; i++) {
+        // arrayStringBuilder.append(array[i].toString());
+        // arrayStringBuilder.append(", ");
+        // }
+        for (T element : this) {
+            arrayStringBuilder.append(element.toString());
+            arrayStringBuilder.append(", ");
+        }
+        if (!isEmpty()) {
+            arrayStringBuilder.delete(arrayStringBuilder.length() - 2, arrayStringBuilder.length());
+        }
+        arrayStringBuilder.append("]");
+        return arrayStringBuilder.toString();
     }
 
     private class IUSingleLinkedListIterator implements Iterator<T> {
@@ -315,10 +358,14 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             if (callsToRemove >= 1) {
                 throw new IllegalStateException();
             }
+            Node<T> nodeToBeRemoved = lastReturnedNode;
             if (nodeBeforeRemove == null) {
                 head = currLocation;
             } else {
                 nodeBeforeRemove.setNextNode(currLocation);
+            }
+            if (nodeToBeRemoved == tail) {
+                tail = nodeBeforeRemove;
             }
             IUSingleLinkedList.this.size--;
             IUSingleLinkedList.this.modCount++;
