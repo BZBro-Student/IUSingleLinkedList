@@ -36,7 +36,6 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             head = newNode;
             tail = newNode;
         } else {
-            newNode.setNextNode(null);
             tail.setNextNode(newNode);
             tail = newNode;
         }
@@ -109,7 +108,7 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T removeFirst() {
-        if (size == 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
         T returnValue = head.getElement();
@@ -124,7 +123,7 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T removeLast() {
-        if (this.size() == 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
         T returnValue = null;
@@ -229,11 +228,14 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
     public int indexOf(T element) {
         Node<T> currNode = head;
         int currIndex = 0;
+        //initialize at -1 since index of returns -1 if the element is never found
         int foundIndex = -1;
         while (currNode != null) {
+            //checks to see if equal
             if (currNode.getElement().equals(element)) {
                 foundIndex = currIndex;
             }
+            //if our index is no longer -1, found the element and break out of the loop
             if (foundIndex != -1) {
                 break;
             }
@@ -245,7 +247,7 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T first() {
-        if (isEmpty() || head == null) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
         return head.getElement();
@@ -253,7 +255,7 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T last() {
-        if (isEmpty() || tail == null) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
         return tail.getElement();
@@ -261,22 +263,13 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public boolean contains(T target) {
-        Node<T> currNode = head;
-        boolean contains = false;
-        while (currNode != null) {
-            if (currNode.getElement().equals(target)) {
-                contains = true;
-                break;
-            }
-            currNode = currNode.getNextNode();
-        }
-        return contains;
+      return indexOf(target) > -1;
     }
 
     @Override
     public boolean isEmpty() {
         boolean isEmpty = false;
-        if (tail == null && head == null) {
+        if (head == null && tail == null) {
             isEmpty = true;
         }
         return isEmpty;
