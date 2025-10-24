@@ -2,7 +2,12 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-
+/**
+ * Implements IndexedUnsortedList methods to create a single link node 
+ * based implementation of a indexed unsorted list. 
+ * 
+ * @author Broden
+ */
 public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
     private Node<T> head, tail;
     private int size;
