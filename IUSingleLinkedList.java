@@ -400,9 +400,6 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             if (lastReturnedNode == tail) {
                 tail = nodeBeforeRemoved;
             }
-            if (head == null) {
-                tail = null;
-            }
             size--;
             modCount++;
             expectedModCount++;
