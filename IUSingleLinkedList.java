@@ -154,15 +154,15 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T remove(T element) {
-        if (isEmpty()){
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
         T returnVal = null;
 
-        if(head.getElement().equals(element)){
+        if (head.getElement().equals(element)) {
             returnVal = head.getElement();
             head = head.getNextNode();
-            if (head == null){
+            if (head == null) {
                 tail = null;
             }
         } else {
@@ -170,12 +170,12 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             while (currNode != tail && !(currNode.getNextNode().getElement().equals(element))) {
                 currNode = currNode.getNextNode();
             }
-            if (currNode == tail){
+            if (currNode == tail) {
                 throw new NoSuchElementException();
             }
-            //set the return val to the element being removed
+            // set the return val to the element being removed
             returnVal = currNode.getNextNode().getElement();
-            //hop nodes to the element after the removed node
+            // hop nodes to the element after the removed node
             currNode.setNextNode(currNode.getNextNode().getNextNode());
             if (currNode.getNextNode() == null) {
                 tail = currNode;
@@ -329,23 +329,31 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
         return arrayStringBuilder.toString();
     }
 
+    /**
+     * Contains the constructor and methods for a iterator meant to be used on a
+     * single linked list. Implements
+     * the Iterator interface for type T.
+     * 
+     * @Author Broden
+     */
     private class IUSingleLinkedListIterator implements Iterator<T> {
         private Node<T> currLocation;
         private Node<T> lastReturnedNode;
-        private Node<T> nodeBeforeRemove;
+        private Node<T> nodeBeforeRemoved;
         private int callsToRemove;
         private int expectedModCount;
 
         public IUSingleLinkedListIterator() {
+            // currLocation indicates the location we are pointing towards next
             currLocation = head;
-            nodeBeforeRemove = null;
+            nodeBeforeRemoved = null;
             lastReturnedNode = null;
             callsToRemove = 1;
             expectedModCount = modCount;
         }
 
         /**
-         * Checks to see if the array has changed using outside methods
+         * Checks to see if the array has changed using outside methods,
          * to help enforce fail fast behavior
          */
         private void hasChanged() {
@@ -362,10 +370,13 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
 
         @Override
         public T next() {
-            hasChanged();
             if (hasNext()) {
-                nodeBeforeRemove = lastReturnedNode;
+                // get the node that will be the node 2 nodes away from the one that will be
+                // removed in our remove method
+                nodeBeforeRemoved = lastReturnedNode;
                 T returnValue = currLocation.getElement();
+                // update last returned node to get an up to date reference to what will be the
+                // last returned node
                 lastReturnedNode = currLocation;
                 currLocation = currLocation.getNextNode();
                 callsToRemove = 0;
@@ -381,20 +392,22 @@ public class IUSingleLinkedList<T> implements IndexedUnsortedList<T> {
             if (callsToRemove >= 1) {
                 throw new IllegalStateException();
             }
-            Node<T> nodeToBeRemoved = lastReturnedNode;
-            if (nodeBeforeRemove == null) {
+            if (nodeBeforeRemoved == null) {
                 head = currLocation;
             } else {
-                nodeBeforeRemove.setNextNode(currLocation);
+                nodeBeforeRemoved.setNextNode(currLocation);
             }
-            if (nodeToBeRemoved == tail) {
-                tail = nodeBeforeRemove;
+            if (lastReturnedNode == tail) {
+                tail = nodeBeforeRemoved;
             }
-            IUSingleLinkedList.this.size--;
-            IUSingleLinkedList.this.modCount++;
+            if (head == null) {
+                tail = null;
+            }
+            size--;
+            modCount++;
             expectedModCount++;
             callsToRemove++;
-            lastReturnedNode = nodeBeforeRemove;
+            lastReturnedNode = nodeBeforeRemoved;
 
         }
     }
